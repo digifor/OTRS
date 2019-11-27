@@ -1,0 +1,13 @@
+Following are the recommended hardware and software requirements for OTRS 6
+
+8 GB RAM
+3 GHZ Xenon
+256 GB Disk space
+Perl 5.16 or higher
+Web Server (Apache 2 or NGINX)
+Database (MariaDB, MySQL & PostgreSQL 9.2 or higher)
+
+Minimal CentOS 7 Or RHEL 7 System
+RAM: 4 GB
+vCPU: 2
+Disk Space: 40 GB
