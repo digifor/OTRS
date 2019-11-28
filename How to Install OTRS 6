@@ -1,0 +1,138 @@
++++++++++++++++++++++++++++++++++++++
+Step:1) Update system dan restart OS
++++++++++++++++++++++++++++++++++++++
+
+[root@otrs ~]# yum update && reboot
+
+Catatan : Note: disable SELinux dengan menggunakan command sebagai berikut:
+
+[root@otrs ~]# setenforce 0
+[root@otrs ~]# sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/sysconfig/selinux
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Step:2) Install Web Server (Apache) dan Database Server (MariaDB)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Install Apache Web Server dan MariaDB database server menggunakan command sebagai berikut:
+
+[root@otrs ~]# yum install httpd httpd-devel gcc mariadb-server -y
+
+Start dan enable Apache Web service menggunakan command sebagai berikut:
+
+[root@otrs ~]# systemctl start httpd
+[root@otrs ~]# systemctl enable httpd
+
+Update parameter [mysqld] pada file /etc/my.cnf 
+
+[root@otrs ~]# vi /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+max_allowed_packet=64M
+query_cache_size=32M
+innodb_log_file_size=256M
+character-set-server=utf8
+collation-server=utf8_unicode_ci
+
+Keluar dan simpan file tersebut
+
+Start dan enable database (mysql) service menggunakan command sebagai berikut:
+
+[root@otrs ~]# systemctl start mariadb
+[root@otrs ~]# systemctl enable mariadb
+
+Configure the root password of mariadb database, remove the test database, remove anonymous users and disable root login remotely.
+
+Run “mysql_secure_installation” command to accomplish above said tasks
+
+[root@otrs ~]# mysql_secure_installation
+
+##### Gambar 1
+##### Gambar 2
+
+===================================================================================
+Step:3) Install Community Edition OTRS 6 using yum command
+At time of writing of this article community edition of OTRS 6 is available, use the below yum command to install it from command line.
+
+[root@otrs ~]# yum install https://ftp.otrs.org/pub/otrs/RPMS/rhel/7/otrs-6.0.17-01.noarch.rpm -y
+Above command will also install the dependencies of OTRS 6 automatically,
+
+Once the OTRS 6 package is installed successfully then restart apache web service,
+
+[root@otrs ~]# systemctl restart httpd
+
+
+===================================================================================
+Step:4) Allow http & https ports in OS firewall
+In case OS firewall is running and enabled on your system then execute the following firewall-cmd command to allow http (80) and https (443) port, else you can skip this step.
+
+[root@otrs ~]# firewall-cmd --permanent --add-service=http
+success
+[root@otrs ~]# firewall-cmd --permanent --add-service=https
+success
+[root@otrs ~]# firewall-cmd --reload
+success
+
+===================================================================================
+Step:5) Verify and install required perl modules for OTRS
+OTRS to work properly, perl modules are required, to verify whether all required perl modules are installed or not run the below command
+
+[root@otrs ~]# /opt/otrs/bin/otrs.CheckModules.pl
+
+####### Gambar 3
+
+As we can see above there are number of perl modules which are not installed. So to proceed with installation first install the missing perl modules.
+
+Some of the perl modules are not available in the default yum centos 7 / RHEL 7 repositories, so enable the epel repository using following yum command,
+
+[root@otrs ~]# yum install epel-release -y
+Now install the missing perl modules using the following yum command,
+
+[root@otrs ~]# yum install "perl(Crypt::Eksblowfish::Bcrypt)" "perl(DBD::Pg)" "perl(Encode::HanExtra)" "perl(JSON::XS)" "perl(Mail::IMAPClient)" "perl(Authen::NTLM)" "perl(ModPerl::Util)" "perl(Text::CSV_XS)" "perl(YAML::XS)" -y
+Re-run the command “/opt/otrs/bin/otrs.CheckModules.pl” to verify whether all the required perl modules are installed successfully or not.
+
+[root@otrs ~]# /opt/otrs/bin/otrs.CheckModules.pl
+
+###### Gambar 4
+
+
+===================================================================================
+Step:5) Access OTRS 6 Web Installer GUI
+Type the following URL in your web browser
+
+http://<OTRS-Server-IP-Adrress>/otrs/installer.pl
+
+In my case URL is  “http://192.168.1.30/otrs/installer.pl”
+
+##### GAmbar 5 - 10
+
+
+Specify the FQDN of your OTRS server, admin email address, Organization and Choose “No” against CheckMXRecord option in case your domain don’t have MX record .
+
+In the next window SKIP mail configuration, In case you have already configured MTA or SMTP relay server then specify the details else skip
+
+##### Gambar 11
+
+===================================================================================
+Step:6) Access Your OTRS Startup page
+Now it’s time to access your otrs startup page, type the following URL in your web browser. Use the user name as “root@localhost” and password which is displayed in above step.
+
+http://192.168.1.30/otrs/index.pl
+
+##### Gambar 12-14
+
+As we can see on the dashboard OTRS daemon is not running, so let’s start it using otrs user,
+
+[root@otrs ~]# su - otrs
+[otrs@otrs ~]$ /opt/otrs/bin/otrs.Daemon.pl start
+Manage the OTRS daemon process.
+Daemon started
+[otrs@otrs ~]$ /opt/otrs/bin/Cron.sh start
+(using /opt/otrs) done
+
+Now refresh the page, “OTRS daemon not running” message should go away.
+
+###### Gambar 15
+
+Finish
