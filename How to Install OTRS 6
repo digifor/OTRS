@@ -86,7 +86,7 @@ Ketikan alamat url pada web browser dengan format seperti di bawah. OTRS-Server-
 
 http://<OTRS-Server-IP-Adrress>/otrs/installer.pl
 
-Contoh Url:  “http://192.X.X.X/otrs/installer.pl”
+Contoh Url:  “http://X.X.X.X/otrs/installer.pl”
 
 Tentukan FQDN server OTRS kita, alamat email admin, Organisasi dan Pilih "Tidak" terhadap opsi CheckMXRecord jika domain kit tidak memiliki data MX.
 Pada halaman berikutnya lewati konfigurasi email, apabila kita sudah mengkonfigurasi server relai MTA atau SMTP
@@ -95,23 +95,19 @@ Pada halaman berikutnya lewati konfigurasi email, apabila kita sudah mengkonfigu
 Step:6) Akses Halaman OTRS 
 ++++++++++++++++++++++++++
 
-Now it’s time to access your otrs startup page, type the following URL in your web browser. Use the user name as “root@localhost” and password which is displayed in above step.
+Sebelum login dengan menggunakan user root, aktifkan terlebih dahulu daemon OTRS dengan  menggunakan command di bawah ini:
 
-http://192.168.1.30/otrs/index.pl
+[root@otrs ~]# crontab -e
 
-##### Gambar 12-14
+ketikan command di bawah ini:
+@reboot su -c "/opt/otrs/bin/otrs.Daemon.pl start ; /opt/otrs/bin/Cron.sh start" -s /bin/bash otrs
+kemudian keluar dan simpan.
 
-As we can see on the dashboard OTRS daemon is not running, so let’s start it using otrs user,
+Langkah selanjutnya adalah login dengan menggunakan username root@localhost dengan password yang kita inputkan pada konfigurasi di atas dan buat user admin untuk mengelola OTRS. 
 
-[root@otrs ~]# su - otrs
-[otrs@otrs ~]$ /opt/otrs/bin/otrs.Daemon.pl start
-Manage the OTRS daemon process.
-Daemon started
-[otrs@otrs ~]$ /opt/otrs/bin/Cron.sh start
-(using /opt/otrs) done
+http://<OTRS-Server-IP-Adrress>/otrs/index.pl
 
-Now refresh the page, “OTRS daemon not running” message should go away.
+Contoh Url: http://X.X.X.X/otrs/index.pl
 
-###### Gambar 15
 
-Finish
+NOTE : [SANGAT TIDAK DIREKOMENDASIKAN] menggunakan username root@localhost sebagai pengelola OTRS 
