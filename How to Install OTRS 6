@@ -66,7 +66,7 @@ Apabila firewall dijalankan dan enabled pada OS, jalankan command berikut untuk 
 [root@otrs ~]# firewall-cmd --reload
 
 ++++++++++++++++++++++++++++++++++++++++++++++
-Step:5) Verifikasi and install modul perl OTRS
+Step:5) Verifikasi dan install modul perl OTRS
 ++++++++++++++++++++++++++++++++++++++++++++++
 
 Beberapa modul perl tidak tersedia di repositori yum centos 7 / RHEL 7 default, jadi aktifkan repositori epel dan install modul perl yang belum tersedia dengan menggunakan command sebagai berikut:
@@ -109,5 +109,8 @@ http://<OTRS-Server-IP-Adrress>/otrs/index.pl
 
 Contoh Url: http://X.X.X.X/otrs/index.pl
 
++++++++++++++++
+Step:7) Selesai
++++++++++++++++
 
 NOTE : [SANGAT TIDAK DIREKOMENDASIKAN] menggunakan username root@localhost sebagai pengelola OTRS 
